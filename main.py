@@ -1,12 +1,20 @@
-import asyncio
+import sys
+import os
+import pathlib
+import dotenv 
+from exceptions import exceptions
 
-from modules.parser import Parser
+from modules.utils import Utility as utils
+
+dotenv.load_dotenv()
 
 
-async def main():
-    parser = Parser()
-    print(await parser.get_online_users())
+
+def main(args: list[str] = sys.argv):
+    utils.read_environ(args)
+    
+
 
 
 if __name__ == '__main__':
-    asyncio.run(main())
+    main()
