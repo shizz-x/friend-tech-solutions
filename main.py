@@ -1,20 +1,19 @@
 import sys
-import os
-import pathlib
 import dotenv 
-from exceptions import exceptions
-
 from modules.utils import Utility as utils
-
+utils.read_environ()
 dotenv.load_dotenv()
+from modules.core import Core
+from modules.friendclient import Client
+
+
 
 
 
 def main(args: list[str] = sys.argv):
-    utils.read_environ(args)
-    
+    core = Core()
 
-
+    core.start_procces()
 
 if __name__ == '__main__':
     main()

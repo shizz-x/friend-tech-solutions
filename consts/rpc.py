@@ -1,0 +1,1 @@
+ethereum_rpc = 'https://eth.llamarpc.com'

@@ -1,14 +1,27 @@
 import pathlib
-from exceptions.exceptions import NotFoundProxyFile, InvalidArgument
 import os
 import dotenv
+
 class Utility:
 
 
     @staticmethod
-    def get_proxies() -> list[str]:
-        path_to_proxies = pathlib.Path('../file')
-
+    def get_proxies() -> list[str] | None:
+        proxies = [proxy for proxy in open(os.environ['path_to_proxy'], 'r').read().split('\n') if proxy != '']
+        if len(proxies) == 0:
+            return None
+        prepared_proxies = []
+        for proxy in proxies:
+            prepared_proxies.append(Utility.prepare_proxy(proxy))
+        return prepared_proxies
+    
+    @staticmethod
+    def get_keys() -> list[str] | list:
+        private_keys = [key for key in open(os.environ['path_to_keys'], 'r').read().split('\n') if key != '']
+        if len(private_keys) == 0:
+            return []
+        return private_keys
+    
 
     @staticmethod
     def prepare_proxy(proxy_string):
@@ -31,24 +44,42 @@ class Utility:
                     "Прокси не соответствует ожидаемому формату: 'host:port:user:password' или 'host:port'")
         else:
             PROXY_HOST = proxy_string
+            return f'http://{PROXY_HOST}'
 
         return f'http://{PROXY_USER}:{PROXY_PASS}@{PROXY_HOST}:{PROXY_PORT}'
     
     @staticmethod
-    def read_environ(args: list[str]):
-        if __name__ == '__main__':
+    def read_environ():
+
+        if not pathlib.Path('.env').is_file():
+
             pathlib.Path('.env').touch()
 
-            if len(args) > 1:
-                args.remove('main.py')
-                for arg in args:
-                    if arg.startswith('--path='):
-                        path_to_proxy = arg.replace('--path=', '')
-                        if pathlib.Path(path_to_proxy).is_file():
-                            os.environ['path_to_proxies'] = path_to_proxy
-                            dotenv.set_key(pathlib.Path('.env'), 'path_to_proxies', path_to_proxy)
-                        else:
-                            raise NotFoundProxyFile(f'path {path_to_proxy} invalid')
-            else:
-                if not os.environ.get('path_to_proxies'):
-                    raise InvalidArgument('missing required argument --path=')
+            base_http_uri = input('BASE HTTP PROVIDER: ')
+            print('Change it in .env')
+            os.environ['base_http_uri'] = base_http_uri
+
+            dotenv.set_key(pathlib.Path('.env'), 'base_http_uri', base_http_uri)
+        
+        if not pathlib.Path('./proxy.txt').is_file():
+            
+            pathlib.Path('./proxy.txt').touch()
+            print("File proxy.txt created, format 'host:port:user:password' or 'host:port'")
+        
+        if not pathlib.Path('./keys.txt').is_file():
+            
+            pathlib.Path('./keys.txt').touch()
+
+            input('private keys file created, put some keys newline separated')
+            raise ValueError('private keys file created, put some keys newline separated')
+        os.environ['path_to_keys'] = str(pathlib.Path('./keys.txt').absolute())
+        os.environ['path_to_proxy'] = str(pathlib.Path('./proxy.txt').absolute())
+        print(os.environ['path_to_keys'])
+
+        
+        
+
+
+
+
+            
