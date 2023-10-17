@@ -1,4 +1,5 @@
-# friend-tech-parser
+# friend-tech
+
 
 
 ## core funcs
